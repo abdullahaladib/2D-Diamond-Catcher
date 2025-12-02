@@ -1,3 +1,7 @@
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+
 def find_zone(x,y):
     zone = 0
     if abs(x) > abs(y):
@@ -60,7 +64,13 @@ def mpl(x1,y1,x2,y2):
     delNE = 2*(dy-dx)
     delE = 2*dy
 
-    for i in range(x1,(x2+1)):
-      pass
+    for x in range(x1,(x2+1)):
+      draw_points(convert_between_zone0_and_zonex(x,y1,zone))
 
-mpl(40,30,20,-50)
+
+def draw_points(lst):
+    x,y=lst
+    glPointSize(5)         
+    glBegin(GL_POINTS)     
+    glVertex2f(x, y)        
+    glEnd()
