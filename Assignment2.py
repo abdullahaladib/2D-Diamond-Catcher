@@ -66,6 +66,11 @@ def mpl(x1,y1,x2,y2):
 
     for x in range(x1,(x2+1)):
       draw_points(convert_between_zone0_and_zonex(x,y1,zone))
+      if d>0:
+           d += delNE
+           y1 += 1
+      else:
+           d += delE  
 
 
 def draw_points(lst):
@@ -74,3 +79,27 @@ def draw_points(lst):
     glBegin(GL_POINTS)     
     glVertex2f(x, y)        
     glEnd()
+
+def setup_projection():
+    glViewport(0, 0, 500, 500)     # Define the portion of the window to render to
+    glMatrixMode(GL_PROJECTION)    # Switch to the projection matrix
+    glLoadIdentity()               # Reset the projection matrix
+    glOrtho(0.0, 500, 0.0, 500, 0.0, 1.0)  # Define a 2D orthographic projection
+    glMatrixMode(GL_MODELVIEW)
+
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear screen and depth buffer
+    glLoadIdentity()                                    # Reset transformations
+    setup_projection()                                  # Set up coordinate system
+    glColor3f(1.0, 1.0, 0.0)                            # Set color (R, G, B) → Yellow
+    mpl(100,400,300,300)                                   # Draw the point
+    glutSwapBuffers()  
+
+glutInit()                               # Initialize GLUT
+glutInitDisplayMode(GLUT_RGBA)           # Set display mode: RGBA color
+glutInitWindowSize(500, 500)             # Set window size (width, height)
+glutInitWindowPosition(0, 0)             # Set window position (top-left corner)
+glutCreateWindow(b"OpenGL 2D Point")     # Create window with a title
+glutDisplayFunc(display)                 # Register display callback
+glutMainLoop()                           # Start the main event-processing loop
