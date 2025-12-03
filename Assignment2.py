@@ -17,6 +17,8 @@ over = False
 play = True
 box_speed = 5
 cheat = False
+max_box_speed = 14
+max_dia_speed = 10
             
 def find_zone(x,y):
     zone = 0
@@ -204,16 +206,17 @@ def animate():
     glutPostRedisplay()
 
 def check_collision():
-    global box_x, d_x, d_y, coll, score, color, over, play, diamond_speed, box_speed
+    global box_x, d_x, d_y, coll, score, color, over, play, diamond_speed, box_speed, max_box_speed, max_dia_speed
     if ((box_x-20) < (d_x+10) < (box_x+80)) and (d_y <= -260):
         d_x = random.randint(-230,230)
         d_y = 260
         coll = True
         score += 1
         print("Score: ",score)
-        diamond_speed += 1
-        box_speed += 2
-        
+        if box_speed <= max_box_speed:
+            box_speed += 2
+        if diamond_speed <= max_dia_speed:    
+            diamond_speed += 1
     else:
         if d_y < -270:
             coll = False
@@ -259,7 +262,7 @@ def mouseListener(button,state,x,y):
         print("Starting Over.")
 
 def cheat_mode():
-    global d_x, box_x, box_speed
+    global d_x, box_x, box_speed, max_box_speed
     
     target = d_x + 10  
     
