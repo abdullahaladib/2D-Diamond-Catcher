@@ -1,10 +1,11 @@
+from time import sleep
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import random
 import os
 
-diamond_speed = 2
+diamond_speed = 1
 box_x = -30
 box_y = -300
 d_x = 100
@@ -14,7 +15,8 @@ score = 0
 color = (1.0,1.0,1.0)
 over = False
 play = True
-box_speed = 10
+box_speed = 5
+cheat = False
             
 def find_zone(x,y):
     zone = 0
@@ -185,11 +187,19 @@ def iterate():
 def animate():
     global d_x, d_y, diamond_speed, over, play
     if over == False and play:
-        check_collision()
-        if d_y <= -280:
-            d_x = random.randint(-230,230)
-            d_y = 260
-        d_y = d_y - diamond_speed
+        if cheat:
+            check_collision()
+            if d_y <= -280:
+                d_x = random.randint(-230,230)
+                d_y = 260
+            d_y = d_y - diamond_speed
+            cheat_mode()
+        else:
+            check_collision()
+            if d_y <= -280:
+                d_x = random.randint(-230,230)
+                d_y = 260
+            d_y = d_y - diamond_speed
 
     glutPostRedisplay()
 
@@ -202,7 +212,7 @@ def check_collision():
         score += 1
         print("Score: ",score)
         diamond_speed += 1
-        box_speed += 1
+        box_speed += 2
         
     else:
         if d_y < -270:
@@ -220,6 +230,21 @@ def special_key_listener(key,x,y):
             box_x -= box_speed
     glutPostRedisplay()
 
+def reset_game():
+    global diamond_speed, box_x, box_y, d_x, d_y, coll, score, color, over, play, box_speed, cheat
+    diamond_speed = 1
+    box_x = -30
+    box_y = -300
+    d_x = 100
+    d_y = 260
+    coll = False
+    score = 0
+    color = (1.0,1.0,1.0)
+    over = False
+    play = True
+    box_speed = 10
+    cheat = False
+
 def mouseListener(button,state,x,y):
     global play
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN and 240<x<260 and 10<y<30:
@@ -228,6 +253,33 @@ def mouseListener(button,state,x,y):
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN and 470<x<490 and 10<y<30:
         glutDestroyWindow(wind)
         os._exit(0)
+    
+    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN and 10<x<30 and 10<y<30:
+        reset_game()
+        print("Starting Over.")
+
+def cheat_mode():
+    global d_x, box_x, box_speed
+    
+    target = d_x + 10  
+    
+    left = box_x - 15
+    right = box_x + 75
+
+    if left > target and box_x > -240:
+        box_x -= box_speed
+        sleep(0.01)
+
+    elif right < target and box_x < 240:
+        box_x += box_speed 
+        sleep(0.01)
+
+
+def keyboardListener(key,x,y):
+    global cheat
+    if key == b'c':
+        cheat = True
+        print("Cheat mode activated!")
 
 glutInit()                               # Initialize GLUT
 glutInitDisplayMode(GLUT_RGBA)           # Set display mode: RGBA color
@@ -236,6 +288,7 @@ glutInitWindowPosition(0, 0)             # Set window position (top-left corner)
 wind = glutCreateWindow(b"Diamond Catcher")     # Create window with a title
 glutDisplayFunc(display)                 # Register display callback
 glutIdleFunc(animate)
+glutKeyboardFunc(keyboardListener)
 glutMouseFunc(mouseListener)
 glutSpecialFunc(special_key_listener)
 glutMainLoop()                           # Start the main event-processing loop
