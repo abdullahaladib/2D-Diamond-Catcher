@@ -5,7 +5,7 @@ from OpenGL.GLU import *
 import random
 import os
 
-diamond_speed = 1
+diamond_speed = 2
 box_x = -30
 box_y = -300
 d_x = 100
@@ -15,10 +15,9 @@ score = 0
 color = (1.0,1.0,1.0)
 over = False
 play = True
-box_speed = 5
+box_speed = 20
 cheat = False
-max_box_speed = 14
-max_dia_speed = 10
+max_dia_speed = 8
             
 def find_zone(x,y):
     zone = 0
@@ -113,17 +112,16 @@ def draw_points(lst):
     glEnd()
 
 def setup_projection():
-    glViewport(0, 0, 500, 600)     # Define the portion of the window to render to
-    glMatrixMode(GL_PROJECTION)    # Switch to the projection matrix
-    glLoadIdentity()               # Reset the projection matrix
-    glOrtho(-250.0, 250, -300.0, 300, 0.0, 1.0)  # Define a 2D orthographic projection
+    glViewport(0, 0, 500, 600)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    glOrtho(-250.0, 250, -300.0, 300, 0.0, 1.0)
     glMatrixMode(GL_MODELVIEW)
 
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  
     glLoadIdentity()                                    
     setup_projection()
-    iterate()
     if not play:
         draw_play()
     else:
@@ -178,13 +176,6 @@ def draw_box():
      mpl(box_x-20,box_y+20,box_x,box_y+1)
      mpl(box_x-20,box_y+20,box_x+80,box_y+20)
      
-def iterate():
-    glViewport(0, 0, 500, 600)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    glOrtho(-250.0, 250, -300.0, 300, 0.0, 1.0)  # Define a 2D orthographic projection
-    glMatrixMode(GL_MODELVIEW)
-    glLoadIdentity()
 
 def animate():
     global d_x, d_y, diamond_speed, over, play
@@ -206,15 +197,13 @@ def animate():
     glutPostRedisplay()
 
 def check_collision():
-    global box_x, d_x, d_y, coll, score, color, over, play, diamond_speed, box_speed, max_box_speed, max_dia_speed
+    global box_x, d_x, d_y, coll, score, color, over, play, diamond_speed, box_speed, max_dia_speed
     if ((box_x-20) < (d_x+10) < (box_x+80)) and (d_y <= -260):
         d_x = random.randint(-230,230)
         d_y = 260
         coll = True
         score += 1
         print("Score: ",score)
-        if box_speed <= max_box_speed:
-            box_speed += 2
         if diamond_speed <= max_dia_speed:    
             diamond_speed += 1
     else:
@@ -284,14 +273,14 @@ def keyboardListener(key,x,y):
         cheat = True
         print("Cheat mode activated!")
 
-glutInit()                               # Initialize GLUT
-glutInitDisplayMode(GLUT_RGBA)           # Set display mode: RGBA color
-glutInitWindowSize(500, 600)             # Set window size (width, height)
-glutInitWindowPosition(0, 0)             # Set window position (top-left corner)
-wind = glutCreateWindow(b"Diamond Catcher")     # Create window with a title
-glutDisplayFunc(display)                 # Register display callback
+glutInit()                               
+glutInitDisplayMode(GLUT_RGBA)           
+glutInitWindowSize(500, 600)             
+glutInitWindowPosition(0, 0)            
+wind = glutCreateWindow(b"Diamond Catcher")  
+glutDisplayFunc(display)         
 glutIdleFunc(animate)
 glutKeyboardFunc(keyboardListener)
 glutMouseFunc(mouseListener)
 glutSpecialFunc(special_key_listener)
-glutMainLoop()                           # Start the main event-processing loop
+glutMainLoop()                   
