@@ -2,22 +2,19 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import random
+import os
 
-class Diamond:
-      def __init__(self, x1,y1,x2,y2):
-            self.x1 = x1
-            self.y1 = y1
-            self.x2 = x2
-            self.y2 = y2
-    
-      def collition(self,other):  
-            if (self.x1 < other.x2 < self.x2) or (self.x1<other.x1<self.x2):
-                if (self.y1 < other.y2 < self.y2):
-                    return True
-                else:
-                    return False
-            else:
-                return False
+diamond_speed = 2
+box_x = -30
+box_y = -300
+d_x = 100
+d_y = 260
+coll = False
+score = 0
+color = (1.0,1.0,1.0)
+over = False
+play = True
+box_speed = 10
             
 def find_zone(x,y):
     zone = 0
@@ -84,8 +81,6 @@ def convert_between_zone0_and_zonex(mode, x, y, zone):
         elif zone == 7:
                 return [x,-y]
           
-      
-
 def mpl(x1,y1,x2,y2):
     dx = x2-x1
     dy = y2-y1
@@ -106,7 +101,6 @@ def mpl(x1,y1,x2,y2):
       else:
            d += delE  
 
-
 def draw_points(lst):
     x,y=lst
     glPointSize(2)         
@@ -121,17 +115,24 @@ def setup_projection():
     glOrtho(-250.0, 250, -300.0, 300, 0.0, 1.0)  # Define a 2D orthographic projection
     glMatrixMode(GL_MODELVIEW)
 
-
 def display():
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear screen and depth buffer
-    glLoadIdentity()                                    # Reset transformations
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  
+    glLoadIdentity()                                    
     setup_projection()
     iterate()
+    if not play:
+        draw_play()
+    else:
+        draw_pause()
+    draw_box()
     draw_return()
-    draw_pause()                                 # Set up coordinate system
+                                     
+    
     draw_cross()
-    draw_diamond()                                  # Draw the point
+    if not over:
+        draw_diamond()                             
     glutSwapBuffers()  
+
 def draw_cross():
     glColor3f(1.0, 0.0, 0.0)
     mpl(220,270,240,290)
@@ -142,23 +143,37 @@ def draw_pause():
     mpl(-5,270,-5,290)
     mpl(5,270,5,290)
 
+def draw_play():
+     glColor3f(1.0,1.0,0.0)
+     mpl(-10,280,10,290)
+     mpl(-10,280,10,270)
+     mpl(10,270,10,290)
+
 def draw_return():
     glColor3f(0.0,0.0,1.0)
     mpl(-240,280,-220,280)
     mpl(-240,280,-230,290)
     mpl(-240,279,-230,270)
+
 def draw_diamond():
    
     global d_x, d_y
-    d_x = random.randint(-240,240)
-    d_y = 260
-    glColor3f(1.0, 1.0, 1.0)
+
+    glColor3f(1.0, 1.0, 0.0)
     mpl(d_x,d_y,d_x+10,d_y+15)
     mpl(d_x+10,d_y+15,d_x+20,d_y)
     mpl(d_x,d_y,d_x+10,d_y-15)
     mpl(d_x+20,d_y,d_x+10,d_y-15)
 
+def draw_box():
+     global box_x, box_y
 
+     glColor3f(*color)
+     mpl(box_x,box_y,box_x+60,box_y)
+     mpl(box_x+59,box_y+1,box_x+80,box_y+20)
+     mpl(box_x-20,box_y+20,box_x,box_y+1)
+     mpl(box_x-20,box_y+20,box_x+80,box_y+20)
+     
 def iterate():
     glViewport(0, 0, 500, 600)
     glMatrixMode(GL_PROJECTION)
@@ -167,10 +182,60 @@ def iterate():
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
+def animate():
+    global d_x, d_y, diamond_speed, over, play
+    if over == False and play:
+        check_collision()
+        if d_y <= -280:
+            d_x = random.randint(-230,230)
+            d_y = 260
+        d_y = d_y - diamond_speed
+
+    glutPostRedisplay()
+
+def check_collision():
+    global box_x, d_x, d_y, coll, score, color, over, play, diamond_speed, box_speed
+    if ((box_x-20) < (d_x+10) < (box_x+80)) and (d_y <= -260):
+        d_x = random.randint(-230,230)
+        d_y = 260
+        coll = True
+        score += 1
+        print("Score: ",score)
+        diamond_speed += 1
+        box_speed += 1
+        
+    else:
+        if d_y < -270:
+            coll = False
+            over = True
+            color = (1.0,0.0,0.0)
+            print("Game is over. Score: ", score)
+    
+def special_key_listener(key,x,y):
+    global box_x, box_y, box_speed
+    if not over:
+        if key == GLUT_KEY_RIGHT and (box_x+80) <= 240:
+            box_x += box_speed
+        elif key == GLUT_KEY_LEFT and (box_x-20) >= -240:
+            box_x -= box_speed
+    glutPostRedisplay()
+
+def mouseListener(button,state,x,y):
+    global play
+    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN and 240<x<260 and 10<y<30:
+        play = not play
+
+    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN and 470<x<490 and 10<y<30:
+        glutDestroyWindow(wind)
+        os._exit(0)
+
 glutInit()                               # Initialize GLUT
 glutInitDisplayMode(GLUT_RGBA)           # Set display mode: RGBA color
 glutInitWindowSize(500, 600)             # Set window size (width, height)
 glutInitWindowPosition(0, 0)             # Set window position (top-left corner)
-glutCreateWindow(b"OpenGL 2D Point")     # Create window with a title
+wind = glutCreateWindow(b"Diamond Catcher")     # Create window with a title
 glutDisplayFunc(display)                 # Register display callback
+glutIdleFunc(animate)
+glutMouseFunc(mouseListener)
+glutSpecialFunc(special_key_listener)
 glutMainLoop()                           # Start the main event-processing loop
