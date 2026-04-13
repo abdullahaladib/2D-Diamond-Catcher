@@ -9,9 +9,8 @@
 
 ## What Is Inside
 
-This repository contains multiple OpenGL practice files and assignment implementations for CSE423.
+This repository contains assignment implementation work for CSE423.
 
-- Interactive 2D scene demos
 - Manual midpoint line drawing implementation
 - Keyboard and mouse driven controls
 - A complete diamond-catching game loop with pause, restart, collision, and scoring
@@ -28,16 +27,6 @@ This repository contains multiple OpenGL practice files and assignment implement
     - speed scaling
     - pause/play/restart/exit buttons
     - optional cheat behavior
-
-- `Hello_openGL.py`
-  - Minimal hello-world style OpenGL point rendering example
-
-- `Lets_draw_sth.py`
-  - Interactive drawing + animation playground with:
-    - axes and shapes
-    - moving point
-    - mouse placement
-    - keyboard-based size/speed updates
 
 ---
 
@@ -60,13 +49,6 @@ pip install PyOpenGL PyOpenGL_accelerate
 
 ```bash
 python3 "21201789_Abdullah Al Adib_sec18_Assignment02.py"
-```
-
-You can also run:
-
-```bash
-python3 Hello_openGL.py
-python3 Lets_draw_sth.py
 ```
 
 ---
@@ -111,4 +93,4 @@ Abdullah Al Adib
 
 ## Status
 
-Actively usable for lab demos and assignment submission reference.
+Actively usable for assignment submission reference.
