@@ -19,7 +19,7 @@ This repository contains assignment implementation work for CSE423.
 
 ## Main Files
 
-- `21201789_Abdullah Al Adib_sec18_Assignment02.py`
+- `2D_Diamond_Catcher.py`
   - Main assignment game (catch-the-diamond style)
   - Includes:
     - custom zone-based midpoint line drawing (`mpl`)
@@ -48,7 +48,7 @@ pip install PyOpenGL PyOpenGL_accelerate
 ### 3) Run a file
 
 ```bash
-python3 "21201789_Abdullah Al Adib_sec18_Assignment02.py"
+python3 "2D_Diamond_Catcher.py"
 ```
 
 ---
